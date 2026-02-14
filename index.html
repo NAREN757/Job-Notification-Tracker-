@@ -2859,7 +2859,7 @@
 
             window.regenerateDigest = () => {
                 const today = new Date().toISOString().split('T')[0];
-                const storageKey = `jobTrackerDigest_${today} `;
+                const storageKey = `jobTrackerDigest_${today}`;
                 localStorage.removeItem(storageKey);
                 generateDigest();
             };
@@ -2887,14 +2887,14 @@
 
                 // 4. Store
                 const today = new Date().toISOString().split('T')[0];
-                localStorage.setItem(`jobTrackerDigest_${today} `, JSON.stringify(ids));
+                localStorage.setItem(`jobTrackerDigest_${today}`, JSON.stringify(ids));
 
                 renderDigest();
             };
 
             window.copyDigest = () => {
                 const today = new Date().toISOString().split('T')[0];
-                const ids = JSON.parse(localStorage.getItem(`jobTrackerDigest_${today} `) || '[]');
+                const ids = JSON.parse(localStorage.getItem(`jobTrackerDigest_${today}`) || '[]');
                 const digestJobs = ids.map(id => JOBS.find(j => j.id === id)).filter(Boolean);
 
                 const text = getDigestText(digestJobs);
@@ -3205,4 +3205,5 @@ Core Features:
 
 
 </html>
+
 
