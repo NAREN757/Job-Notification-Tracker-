@@ -1,0 +1,3206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Notification Tracker - Premium</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            /* Color System */
+            --color-bg: #F7F6F3;
+            --color-text-primary: #111111;
+            --color-text-secondary: #555555;
+            --color-accent: #8B0000;
+            --color-success: #4A7C59;
+            --color-warning: #D4A017;
+            --color-border: #E0E0E0;
+            --color-surface: #FFFFFF;
+            --color-primary: #4f46e5;
+            /* Indigo for UI controls */
+
+            /* Typography */
+            --font-heading: 'Outfit', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --line-height-body: 1.6;
+
+            /* Spacing */
+            --space-1: 8px;
+            --space-2: 16px;
+            --space-3: 24px;
+            --space-4: 40px;
+            --space-5: 64px;
+
+            /* UI Tokens */
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --transition-speed: 200ms;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text-primary);
+            font-family: var(--font-body);
+            line-height: var(--line-height-body);
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--space-4);
+            padding: 0 var(--space-4);
+            /* border and background handled by global override for transparency */
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: -0.01em;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: var(--space-3);
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--color-text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            padding: 20px 0;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: color var(--transition-speed);
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--color-text-primary);
+        }
+
+        .nav-link.active {
+            border-bottom-color: var(--color-accent);
+        }
+
+        .page-content {
+            flex: 1;
+            padding: var(--space-5) var(--space-4);
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Landing Page Override */
+        .page-content.landing-page {
+            max-width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        /* Components */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            text-decoration: none;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background: var(--color-accent);
+            color: #fff;
+            border-color: var(--color-accent);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--color-text-primary);
+            border-color: var(--color-border);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--color-text-primary);
+        }
+
+        .card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+        }
+
+        .input-field,
+        .select-field {
+            width: 100%;
+            padding: 10px 14px;
+            font-family: var(--font-body);
+            font-size: 14px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            background: #fff;
+        }
+
+        .input-field:focus,
+        .select-field:focus {
+            outline: none;
+            border-color: var(--color-text-primary);
+        }
+
+        /* Dashboard Styles */
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-2);
+        }
+
+        .filter-bar {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
+            gap: var(--space-2);
+            margin-bottom: var(--space-4);
+            padding: var(--space-3);
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            position: relative;
+            /* Context for z-index */
+            z-index: 200;
+            /* Ensure it stays above grid content */
+        }
+
+        .job-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: var(--space-3);
+            gap: var(--space-3);
+        }
+
+        /* Dashboard View Overrides */
+        .dashboard-view.page-content,
+        .dashboard-view .page-content {
+            max-width: 95% !important;
+            /* Widen container for 5 columns */
+        }
+
+        .dashboard-view .job-grid {
+            grid-template-columns: repeat(5, 1fr) !important;
+            /* Force 5 columns */
+        }
+
+        @media (max-width: 1400px) {
+            .dashboard-view .job-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+                /* Fallback for smaller screens */
+            }
+        }
+
+        .job-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-3);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .job-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-color: var(--color-text-primary);
+            z-index: 100;
+            /* Ensure dropdowns show above other cards */
+        }
+
+        .job-card.active-dropdown {
+            z-index: 100;
+            /* fallback if JS toggles this */
+        }
+
+        /* Ensure the dropdown wrapper doesn't get clipped */
+        .job-card .custom-select-wrapper {
+            z-index: 101;
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: var(--space-2);
+        }
+
+        .job-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--color-text-primary);
+        }
+
+        .job-company {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            margin-top: 4px;
+        }
+
+        .posted-badge {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            background: #f0f0f0;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        /* Match Badge */
+        .match-badge {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-left: 8px;
+            display: inline-block;
+        }
+
+        .match-high {
+            background-color: #E6F4EA;
+            color: #1E8E3E;
+        }
+
+        /* Green */
+        .match-med {
+            background-color: #FEF7E0;
+            color: #B06000;
+        }
+
+        /* Amber */
+        .match-low {
+            background-color: #F1F3F4;
+            color: #5F6368;
+        }
+
+        /* Neutral */
+        .match-poor {
+            background-color: #F8F9FA;
+            color: #9AA0A6;
+        }
+
+        /* Grey */
+
+        .job-meta {
+            display: flex;
+            gap: var(--space-2);
+            flex-wrap: wrap;
+            margin-bottom: var(--space-3);
+            font-size: 13px;
+            color: var(--color-text-secondary);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .source-badge {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-accent);
+            font-weight: 600;
+        }
+
+        .job-actions {
+            display: flex;
+            gap: var(--space-2);
+            margin-top: auto;
+            padding-top: var(--space-3);
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .job-actions .btn {
+            flex: 1;
+            padding: 8px;
+            font-size: 13px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: #fff;
+            width: 90%;
+            max-width: 600px;
+            padding: var(--space-4);
+            border-radius: var(--radius-md);
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(20px);
+            transition: transform 0.2s;
+        }
+
+        .modal-overlay.open .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            margin-bottom: var(--space-3);
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: var(--space-3);
+        }
+
+        .modal-title {
+            font-family: var(--font-heading);
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #f4f4f4;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        /* Empty States */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--color-text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: var(--space-3);
+            display: block;
+            opacity: 0.5;
+        }
+
+        #error-container {
+            color: red;
+            background: #fee;
+            border: 1px solid red;
+            padding: 10px;
+            margin: 10px;
+            display: none;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-not-applied {
+            background: #eee;
+            color: #666;
+        }
+
+        .status-applied {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-rejected {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .status-selected {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        /* Toast Notification */
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+        }
+
+        .toast {
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 4px;
+            margin-top: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.3s ease-out;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Utilities */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Landing Page Styles */
+        .hero-section {
+            text-align: center;
+            padding: 100px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-headline {
+            font-family: var(--font-heading);
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 24px;
+            color: var(--color-text-primary);
+        }
+
+        .hero-subtext {
+            font-size: 18px;
+            color: var(--color-text-secondary);
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Settings Styles */
+        .settings-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: var(--color-text-primary);
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin-top: 6px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .range-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .range-value {
+            font-weight: 600;
+            font-size: 14px;
+            width: 40px;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .toggle-input {
+            display: none;
+        }
+
+        .toggle-slider {
+            width: 36px;
+            height: 20px;
+            background: #ccc;
+            border-radius: 20px;
+            position: relative;
+            transition: 0.2s;
+        }
+
+        .toggle-slider::before {
+            content: "";
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: 0.2s;
+        }
+
+        .toggle-input:checked+.toggle-slider {
+            background: var(--color-accent);
+        }
+
+        .toggle-input:checked+.toggle-slider::before {
+            transform: translateX(16px);
+        }
+
+        .toggle-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+
+    <style>
+        /* Cursor Spotlight */
+        #cursor-spotlight {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle closest-side, rgba(79, 70, 229, 0.08), transparent);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 90;
+            /* Below Navbar (100) but above content */
+            transition: opacity 0.5s ease;
+            will-change: left, top;
+        }
+
+        /* Custom Animated Dropdown */
+        .custom-select-wrapper {
+            position: relative;
+            user-select: none;
+            width: 100%;
+            min-width: 140px;
+        }
+
+        .custom-select {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .custom-select-trigger {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            /* REDUCED PADDING */
+            font-size: 13px;
+            /* SLIGHTLY SMALLER TEXT */
+            font-weight: 500;
+            color: var(--color-text-primary);
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            height: 40px;
+            /* FIXED HEIGHT */
+        }
+
+        .custom-select-trigger:hover {
+            border-color: var(--color-primary);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .custom-select.open .custom-select-trigger {
+            border-color: var(--color-primary);
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .custom-options {
+            position: absolute;
+            display: block;
+            top: 100%;
+            left: 0;
+            right: 0;
+            border: 1px solid var(--color-primary);
+            border-top: 0;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            background: #fff;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateY(-5px);
+            /* REDUCED OFFSET */
+            z-index: 999;
+            /* HIGH Z-INDEX TO FIX OVERLAP */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            max-height: 0;
+        }
+
+        /* Tag Input Styles */
+        .tag-input-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            background: #fff;
+            min-height: 48px;
+        }
+
+        .tag-input-container:focus-within {
+            border-color: var(--color-text-primary);
+            outline: none;
+        }
+
+        .tag-chip {
+            display: inline-flex;
+            align-items: center;
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .tag-chip .remove-tag {
+            margin-left: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #1565c0;
+            opacity: 0.7;
+        }
+
+        .tag-chip .remove-tag:hover {
+            opacity: 1;
+        }
+
+        .tag-input {
+            border: none;
+            outline: none;
+            flex: 1;
+            min-width: 120px;
+            padding: 4px;
+            font-family: var(--font-body);
+            font-size: 14px;
+        }
+
+        /* Gradient Slider */
+        .range-slider-container {
+            position: relative;
+            width: 100%;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: visible;
+            /* Ensure tooltip isn't clipped */
+            z-index: 10;
+            margin-top: 24px;
+            /* Space for tooltip */
+        }
+
+        input[type=range].styled-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.05);
+            /* Fallback */
+            outline: none;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Thumb Styles */
+        input[type=range].styled-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05);
+            cursor: grab;
+            transition: transform 0.1s cubic-bezier(0.4, 0.0, 0.2, 1), box-shadow 0.2s;
+            transform: translateY(0%);
+            /* Center vertically if needed, but height matches */
+            margin-top: -8px;
+            /* (height 6px - thumb 22px) / 2 = -8px */
+        }
+
+        input[type=range].styled-slider::-webkit-slider-thumb:hover {
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4), 0 0 0 1px rgba(99, 102, 241, 0.1);
+            transform: scale(1.1);
+        }
+
+        input[type=range].styled-slider::-webkit-slider-thumb:active {
+            cursor: grabbing;
+            transform: scale(0.95);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Firefox */
+        input[type=range].styled-slider::-moz-range-track {
+            width: 100%;
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+        }
+
+        input[type=range].styled-slider::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #fff;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05);
+            cursor: grab;
+            transition: transform 0.1s;
+        }
+
+        .slider-tooltip {
+            position: absolute;
+            top: -32px;
+            left: 0;
+            transform: translateX(-50%);
+            background: #4f46e5;
+            /* Hardcoded Indigo */
+            color: #ffffff;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            pointer-events: none;
+            opacity: 0;
+            /* Hidden by default */
+            transition: opacity 0.2s, left 0.1s linear;
+            white-space: nowrap;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .slider-tooltip.visible {
+            opacity: 1;
+        }
+
+        .slider-tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px 5px 0;
+            border-style: solid;
+            border-color: #4f46e5 transparent transparent transparent;
+        }
+
+        .custom-select.open .custom-options {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: all;
+            transform: translateY(0);
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .custom-option {
+            position: relative;
+            display: block;
+            padding: 8px 12px;
+            /* REDUCED PADDING */
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            line-height: 1.4;
+        }
+
+        .custom-option:hover {
+            cursor: pointer;
+            background-color: #f3f4f6;
+            color: var(--color-text-primary);
+            padding-left: 20px;
+            /* Subtle slide right on hover */
+        }
+
+        .custom-option.selected {
+            color: #fff;
+            background-color: var(--color-primary);
+        }
+
+        .arrow {
+            position: relative;
+            height: 10px;
+            width: 10px;
+        }
+
+        .arrow::before,
+        .arrow::after {
+            content: "";
+            position: absolute;
+            bottom: 0px;
+            width: 0.15rem;
+            height: 100%;
+            transition: all 0.3s;
+        }
+
+        .arrow::before {
+            left: -3px;
+            transform: rotate(-45deg);
+            background-color: #94a3b8;
+        }
+
+        .arrow::after {
+            left: 3px;
+            transform: rotate(45deg);
+            background-color: #94a3b8;
+        }
+
+        .open .arrow::before {
+            left: -3px;
+            transform: rotate(45deg);
+        }
+
+        .open .arrow::after {
+            left: 3px;
+            transform: rotate(-45deg);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-enter {
+            animation: fadeInUp 0.4s ease-out forwards;
+        }
+
+        /* Interaction Effects */
+        .job-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .job-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn {
+            transition: transform 0.1s ease, background 0.2s;
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+        }
+
+        .nav-link {
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--color-accent);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* Global Background for Landing Page */
+        #global-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            opacity: 1;
+            /* Always visible now */
+            pointer-events: none;
+        }
+
+        /* Navbar transparency globally */
+        .top-bar {
+            background: rgba(255, 255, 255, 0.02) !important;
+            /* Extremely subtle tint */
+            backdrop-filter: blur(8px);
+            /* content scrolls behind it cleanly */
+            border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+            /* subtle separator */
+        }
+
+        /* Re-using the grid and orb styles here globally */
+        .hero-grid-bg {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(79, 70, 229, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(79, 70, 229, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+        }
+    </style>
+
+    <div id="global-bg">
+        <div class="hero-grid-bg"></div>
+        <div class="blur-orb"
+            style="top: -10%; left: -10%; width: 50vw; height: 50vw; background: rgba(99, 102, 241, 0.08); position: absolute; border-radius: 50%; filter: blur(80px); animation: pulse-glow 8s infinite alternate;">
+        </div>
+        <div class="blur-orb"
+            style="bottom: -10%; right: -10%; width: 40vw; height: 40vw; background: rgba(139, 92, 246, 0.08); position: absolute; border-radius: 50%; filter: blur(80px); animation: pulse-glow 8s infinite alternate;">
+        </div>
+        <div class="blur-orb"
+            style="top: 30%; right: 20%; width: 25vw; height: 25vw; background: rgba(16, 185, 129, 0.06); position: absolute; border-radius: 50%; filter: blur(80px); animation: pulse-glow 8s infinite alternate;">
+        </div>
+        <div class="blur-orb"
+            style="bottom: 20%; left: 10%; width: 20vw; height: 20vw; background: rgba(245, 158, 11, 0.05); position: absolute; border-radius: 50%; filter: blur(80px); animation: pulse-glow 8s infinite alternate;">
+        </div>
+    </div>
+
+    <nav class="top-bar">
+        <div class="brand" onclick="navigate('home')"
+            style="cursor:pointer; display: flex; align-items: center; gap: 8px;">
+            <img src="../brain/6e1ccb40-1bfa-4d22-ba87-21b14d6b24ed/media__1771017677806.png" alt="KodNest"
+                style="height: 32px; object-fit: contain;">
+            <span
+                style="font-family: var(--font-heading); font-weight: 700; font-size: 18px; color: #D4AF37; letter-spacing: 0.5px; text-transform: uppercase;">Premium</span>
+        </div>
+        <div class="nav-links">
+            <a onclick="navigate('dashboard')" class="nav-link" id="nav-dashboard">Dashboard</a>
+            <a onclick="navigate('saved')" class="nav-link" id="nav-saved">Saved</a>
+            <a onclick="navigate('digest')" class="nav-link" id="nav-digest">Digest</a>
+            <a onclick="navigate('test')" class="nav-link" id="nav-07-test">Test</a>
+            <a onclick="navigate('ship')" class="nav-link" id="nav-08-ship">Ship</a>
+            <a onclick="navigate('settings')" class="nav-link" id="nav-settings">Settings</a>
+            <a onclick="navigate('proof')" class="nav-link" id="nav-proof">Proof</a>
+        </div>
+    </nav>
+
+    <div id="error-container"></div>
+    <div id="app-root" class="page-content"></div>
+
+    <!-- Modal Portal -->
+    <div id="modal-root" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal" id="modal-content"></div>
+    </div>
+
+    <style>
+        /* ... Existing Styles ... */
+
+        /* Aesthetic Enhancements for Specific Pages */
+
+        /* Checklist Card (Test Page) */
+        .checklist-card {
+            background: #fff;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .checklist-card:hover {
+            border-color: var(--color-primary);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .checklist-card.checked {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .checklist-card.checked::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--color-success);
+        }
+
+        /* Timeline (Proof/Digest) */
+        .timeline-container {
+            position: relative;
+            padding-left: 24px;
+        }
+
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 10px;
+            bottom: 10px;
+            width: 2px;
+            background: #e5e7eb;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -24px;
+            top: 4px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #cbd5e1;
+            z-index: 2;
+        }
+
+        .timeline-item.done .timeline-dot {
+            background: var(--color-success);
+            border-color: var(--color-success);
+        }
+
+        /* Paper Effect (Digest) */
+        .paper-card {
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 8px 24px rgba(0, 0, 0, 0.05);
+            /* Deep shadow */
+            border-radius: 2px;
+            /* Sharper corners */
+            position: relative;
+        }
+
+        .paper-card::before {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            top: 4px;
+            left: 4px;
+            right: 4px;
+            bottom: -4px;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 2px;
+        }
+    </style>
+    <script>
+        try {
+            // Data
+            // --- DATA GENERATOR ---
+            const TITLES = ["Frontend Developer", "Backend Engineer", "Full Stack Developer", "DevOps Engineer", "Data Scientist", "Product Manager", "UI/UX Designer", "QA Automation Engineer", "SDE-1", "SDE-2", "Technical Lead", "Mobile Developer (React Native)", "Cloud Architect"];
+            const COMPANIES = ["Google", "Microsoft", "Amazon", "Flipkart", "Swiggy", "Zomato", "Cred", "Razorpay", "Zerodha", "PhonePe", "Udaan", "Ola", "Uber", "Atlassian", "Salesforce", "Zoho", "Freshworks", "Intuit", "Paytm", "MakeMyTrip"];
+            const LOCATIONS = ["Bangalore", "Hyderabad", "Pune", "Gurgaon", "Chennai", "Mumbai", "Noida", "Remote", "Delhi"];
+            const MODES = ["Onsite", "Hybrid", "Remote"];
+            const EXPERIENCE = ["Fresher", "0-1", "1-3", "3-5", "5-8", "8+"];
+            const SOURCES = ["LinkedIn", "Naukri", "Indeed", "Instahyre", "Hirist", "Company Site", "Referral"];
+            const SKILLS_POOL = ["React", "Node.js", "Python", "Java", "AWS", "Docker", "Kubernetes", "TypeScript", "Go", "SQL", "MongoDB", "Figma", "Redux", "GraphQL", "Next.js", "Spring Boot", "System Design"];
+
+            function generateDescription(title, company, skills) {
+                const templates = [
+                    `We are looking for a passionate <strong>${title}</strong> to join our <strong>${company}</strong> team. You will be responsible for building scalable applications and solving complex engineering challenges. The ideal candidate has strong experience in <strong>${skills[0]}</strong> and <strong>${skills[1] || 'modern tech'}</strong>. This is a high-impact role where you will work closely with cross-functional teams to deliver world-class products that serve millions of users.`,
+
+                    `Join <strong>${company}</strong> as a <strong>${title}</strong> and help us redefine the industry. We are seeking a talented individual with deep knowledge of <strong>${skills[0]}</strong> and a passion for clean, maintainable code. You will work on cutting-edge distributed systems, optimize performance for high-traffic endpoints, and mentor junior developers. Experience with <strong>${skills[1] || 'cloud infra'}</strong> is a big plus.`,
+
+                    `Exciting opportunity for a <strong>${title}</strong> at <strong>${company}</strong>. We are scaling rapidly and need someone to take ownership of our core stack. You will drive architectural decisions, implement best practices in security and scalability, and collaborate with product managers to ship features. Proficiency in <strong>${skills[0]}</strong>, <strong>${skills[1] || 'databases'}</strong>, and cloud infrastructure is required.`,
+
+                    `<strong>${company}</strong> is hiring a <strong>${title}</strong> to lead our next phase of growth. In this role, you will design and implement robust solutions using <strong>${skills[0]}</strong> and <strong>${skills[1] || 'related tech'}</strong>. We value ownership, curiosity, and a first-principles approach to problem-solving. If you love building products that matter, we want to hear from you.`
+                ];
+                return templates[Math.floor(Math.random() * templates.length)];
+            }
+
+            function generateJobs(count) {
+                const jobs = [];
+                for (let i = 0; i < count; i++) {
+                    const title = TITLES[Math.floor(Math.random() * TITLES.length)];
+                    const company = COMPANIES[Math.floor(Math.random() * COMPANIES.length)];
+                    const skills = [
+                        SKILLS_POOL[Math.floor(Math.random() * SKILLS_POOL.length)],
+                        SKILLS_POOL[Math.floor(Math.random() * SKILLS_POOL.length)],
+                        SKILLS_POOL[Math.floor(Math.random() * SKILLS_POOL.length)]
+                    ];
+
+                    jobs.push({
+                        id: `job_${i + 1}`,
+                        title: title,
+                        company: company,
+                        location: LOCATIONS[Math.floor(Math.random() * LOCATIONS.length)],
+                        mode: MODES[Math.floor(Math.random() * MODES.length)],
+                        experience: EXPERIENCE[Math.floor(Math.random() * EXPERIENCE.length)],
+                        salaryRange: `₹${10 + Math.floor(Math.random() * 40)} LPA`, // Random salary 10-50 LPA
+                        postedDaysAgo: Math.floor(Math.random() * 10),
+                        source: SOURCES[Math.floor(Math.random() * SOURCES.length)],
+                        applyUrl: "#",
+                        skills: [...new Set(skills)], // Unique skills
+                        description: generateDescription(title, company, skills)
+                    });
+                }
+                return jobs;
+            }
+
+            // Generate 60 unique jobs
+            // Persistence for Demo Data (So refreshing doesn't change job_1 from Google to Zomato)
+            let JOBS;
+            const storedJobs = localStorage.getItem('jobTrackerData');
+            if (storedJobs) {
+                JOBS = JSON.parse(storedJobs);
+            } else {
+                JOBS = generateJobs(60);
+                localStorage.setItem('jobTrackerData', JSON.stringify(JOBS));
+            }
+
+            // Initial State
+            const defaultPrefs = {
+                roleKeywords: '',
+                preferredLocations: [],
+                preferredMode: ['Remote', 'Hybrid', 'Onsite'],
+                experienceLevel: 'Fresher',
+                skills: '',
+                minMatchScore: 40
+            };
+
+            const savedPrefs = JSON.parse(localStorage.getItem('jobTrackerPreferences'));
+
+            window.state = {
+                route: localStorage.getItem('jobTrackerRoute') || 'dashboard',
+                saved: JSON.parse(localStorage.getItem('savedJobs')) || [],
+                // New: Status Tracking Map
+                status: JSON.parse(localStorage.getItem('jobTrackerStatus')) || {},
+                // New: Test Checklist State
+                testStatus: JSON.parse(localStorage.getItem('jobTrackerTestStatus')) || {
+                    prefsPersist: false,
+                    matchScoreCalc: false,
+                    matchesToggle: false,
+                    savePersist: false,
+                    applyNewTab: false,
+                    statusPersist: false,
+                    statusFilter: false,
+                    digestGen: false,
+                    digestPersist: false,
+                    noErrors: false
+                },
+                // New: Submission State
+                submission: JSON.parse(localStorage.getItem('jobTrackerSubmission')) || {
+                    lovableLink: '',
+                    githubLink: '',
+                    deployLink: '',
+                    shipped: false,
+                    shippedAt: null
+                },
+                prefs: savedPrefs || defaultPrefs,
+                pagination: {
+                    page: 1,
+                    itemsPerPage: 25
+                },
+                filters: {
+                    text: '',
+                    loc: '',
+                    mode: '',
+                    exp: '',
+                    source: '',
+                    status: 'All', // New Filter
+                    sort: 'Latest',
+                    showMatchesOnly: false
+                }
+            };
+
+            // DOM Elements
+            const root = document.getElementById('app-root');
+
+            // --- NAVIGATION ---
+            window.navigate = (route) => {
+                // Route Mapping
+                if (route === '07-test') route = 'test';
+                if (route === '08-ship') route = 'ship';
+
+                // Ship Route Locking
+                if (route === 'ship') {
+                    const allPassed = Object.values(window.state.testStatus).every(v => v === true);
+                    if (!allPassed) {
+                        alert('⚠️ You must complete all pre-flight checks before shipping!');
+                        return;
+                    }
+                }
+
+                // Persist Route
+                localStorage.setItem('jobTrackerRoute', route);
+
+                window.state.route = route;
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+
+                // Active link logic
+                let linkId = '';
+                if (route === 'test') linkId = 'nav-07-test';
+                else if (route === 'ship') linkId = 'nav-08-ship';
+                else linkId = `nav-${route}`;
+
+                const active = document.getElementById(linkId);
+                if (active) active.classList.add('active');
+                render();
+            };
+
+            // --- MATCH ENGINE ---
+            function calculateMatchScore(job, prefs) {
+                if (!prefs) return 0;
+                let score = 0;
+
+                // +25 Role Keyword in Title
+                const keywords = Array.isArray(prefs.roleKeywords)
+                    ? prefs.roleKeywords.map(s => s.trim().toLowerCase())
+                    : (prefs.roleKeywords || '').toLowerCase().split(',').map(s => s.trim()).filter(s => s);
+
+                if (keywords.length > 0 && keywords.some(k => job.title.toLowerCase().includes(k))) {
+                    score += 25;
+                }
+
+                // +15 Role Keyword in Description
+                if (keywords.length > 0 && keywords.some(k => job.description.toLowerCase().includes(k))) {
+                    score += 15;
+                }
+
+                // +15 Location Match
+                if (prefs.preferredLocations.length > 0 && prefs.preferredLocations.some(l => job.location.includes(l))) {
+                    score += 15;
+                }
+
+                // +10 Mode Match
+                if (prefs.preferredMode.includes(job.mode)) {
+                    score += 10;
+                }
+
+                // +10 Experience Match
+                if (job.experience === prefs.experienceLevel) {
+                    score += 10;
+                } else if (prefs.experienceLevel === '1-3' && (job.experience === '0-1' || job.experience === 'Fresher')) {
+                    // Partial match logic could go here, but sticking to strict rule for now
+                }
+
+                // +15 Skills Overlap
+                const jobSkills = job.skills.map(s => s.toLowerCase());
+                // Handle both array (new) and string (legacy) formats
+                const userSkills = Array.isArray(prefs.skills)
+                    ? prefs.skills.map(s => s.toLowerCase())
+                    : (prefs.skills || '').toLowerCase().split(',').map(s => s.trim()).filter(s => s);
+
+                if (userSkills.length > 0) {
+                    const skillMatches = userSkills.filter(s => jobSkills.some(js => js.includes(s)));
+                    score += (skillMatches.length * 15); // +15 per skill match
+                }
+                // +5 Posted <= 2 days
+                if (job.postedDaysAgo <= 2) {
+                    score += 5;
+                }
+
+                // +5 Source LinkedIn
+                if (job.source.toLowerCase() === 'linkedin') {
+                    score += 5;
+                }
+
+                return Math.min(score, 100);
+            }
+
+            function getMatchBadge(score) {
+                // Lowered thresholds for better feedback
+                if (score >= 70) return `<span class="match-badge match-high">${score}% Excellent</span>`;
+                if (score >= 50) return `<span class="match-badge match-med">${score}% Good</span>`;
+                if (score >= 30) return `<span class="match-badge match-low">${score}% Fair</span>`;
+                return `<span class="match-badge match-poor">${score}% Low</span>`;
+            }
+
+            // --- RENDERERS ---
+            function render() {
+                const route = window.state.route;
+                const appRoot = document.getElementById('app-root');
+
+                // Update Navigation State
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                const activeNav = document.getElementById(`nav-${route}`);
+                if (activeNav) activeNav.classList.add('active');
+
+                // Handle Landing Page Full-Width Layout & Global Background
+                if (route === 'home') {
+                    appRoot.classList.add('landing-page');
+                    document.body.classList.add('landing-mode');
+                } else if (route === 'dashboard') {
+                    appRoot.classList.add('dashboard-view');
+                    appRoot.classList.remove('landing-page');
+                    document.body.classList.remove('landing-mode');
+                } else {
+                    appRoot.classList.remove('landing-page');
+                    appRoot.classList.remove('dashboard-view');
+                    document.body.classList.remove('landing-mode');
+                }
+
+                // Trigger Animation
+                appRoot.classList.remove('animate-enter');
+                void appRoot.offsetWidth; // Trigger reflow
+                appRoot.classList.add('animate-enter');
+
+                // Router Logic
+                switch (route) {
+                    case 'dashboard': renderDashboard(); break;
+                    case 'saved': renderSaved(); break;
+                    case 'digest': renderDigest(); break;
+                    case 'test': renderTest(); break;
+                    case 'ship': renderShip(); break;
+                    case 'settings': renderSettings(); break;
+                    case 'proof': renderProof(); break;
+                    case 'home': renderLanding(); break;
+                    default: renderDashboard();
+                }
+
+                // Update Test/Ship navigation status visual
+                const t = window.state.testStatus;
+                const allPassed = Object.values(t).every(v => v === true);
+                const shipNav = document.getElementById('nav-08-ship');
+                if (shipNav) {
+                    if (allPassed) {
+                        shipNav.innerHTML = 'Ship 🚀';
+                        shipNav.style.opacity = '1';
+                    } else {
+                        shipNav.innerHTML = 'Ship 🔒';
+                        shipNav.style.opacity = '0.6';
+                    }
+                }
+            }
+
+            function renderLanding() {
+                root.innerHTML = `
+                    <style>
+                        .hero-grid-bg {
+                            position: absolute;
+                            inset: 0;
+                            background-image: 
+                                linear-gradient(rgba(79, 70, 229, 0.05) 1px, transparent 1px),
+                                linear-gradient(90deg, rgba(79, 70, 229, 0.05) 1px, transparent 1px);
+                            background-size: 40px 40px;
+                            mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+                            z-index: 0;
+                        }
+                        
+                        .blur-orb {
+                            position: absolute;
+                            border-radius: 50%;
+                            filter: blur(80px);
+                            opacity: 0.4;
+                            z-index: 0;
+                            animation: pulse-glow 8s infinite alternate;
+                        }
+
+                        @keyframes pulse-glow {
+                            0% { transform: scale(1); opacity: 0.3; }
+                            100% { transform: scale(1.1); opacity: 0.5; }
+                        }
+                    </style>
+
+                    <div class="hero-section" style="width: 100%; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px 20px; overflow: hidden; position: relative;">
+                        
+                        <!-- Central Content -->
+                        <div style="z-index: 10; max-width: 800px; position: relative;">
+                            <div style="display: inline-block; padding: 8px 20px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); color: var(--color-primary); border-radius: 30px; font-size: 14px; font-weight: 600; margin-bottom: 32px; border: 1px solid rgba(79, 70, 229, 0.2); box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                                ✨ Automated Job Hunting for Devs
+                            </div>
+                            <h1 class="hero-headline" style="font-size: clamp(40px, 5vw, 72px); line-height: 1.1; margin-bottom: 24px; letter-spacing: -2px;">
+                                Your Next Role,<br>
+                                <span style="background: linear-gradient(90deg, var(--color-primary), var(--color-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Delivered Daily.</span>
+                            </h1>
+                            <p class="hero-subtext" style="font-size: clamp(16px, 2vw, 20px); color: var(--color-text-secondary); margin-bottom: 48px; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6;">
+                                Stop doom-scrolling job boards. Get a curated digest of roles that match your stack, experience, and vibe.
+                            </p>
+                            <div style="display: flex; gap: 16px; justify-content: center;">
+                                <button class="btn btn-primary" style="padding: 16px 40px; font-size: 18px; box-shadow: 0 20px 40px -10px var(--color-primary-transparent);" onclick="navigate('settings')">
+                                    Start Tracking Free
+                                </button>
+                                <button class="btn btn-outline" style="padding: 16px 32px; font-size: 18px; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px);" onclick="navigate('dashboard')">
+                                    Explore Demo
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Hanging Graphics (New Request) -->
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;">
+                            
+                            <!-- Left Hanger: Profile Match -->
+                            <div style="position: absolute; left: 5%; top: -20px; animation: swing 6s ease-in-out infinite; transform-origin: top center;">
+                                <div style="width: 2px; height: 180px; background: rgba(79, 70, 229, 0.2); margin: 0 auto;"></div>
+                                <div style="
+                                    background: rgba(255, 255, 255, 0.95);
+                                    backdrop-filter: blur(8px);
+                                    padding: 16px;
+                                    border-radius: 12px;
+                                    border: 1px solid rgba(255,255,255,0.6);
+                                    box-shadow: 0 10px 30px -5px rgba(0,0,0,0.15);
+                                    width: 160px;
+                                    transform: rotate(-2deg);
+                                ">
+                                    <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 12px;">
+                                        <div style="width: 32px; height: 32px; background: #e0e7ff; color: #4f46e5; border-radius: 50%; display: grid; place-items: center; font-size: 14px;">👨‍💻</div>
+                                        <div>
+                                            <div style="height: 6px; width: 60px; background: #eee; border-radius: 3px; margin-bottom: 4px;"></div>
+                                            <div style="height: 4px; width: 40px; background: #f0f0f0; border-radius: 2px;"></div>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 4px;">
+                                        <span style="font-size: 9px; padding: 2px 6px; background: #f3f4f6; border-radius: 4px; color: #666;">React</span>
+                                        <span style="font-size: 9px; padding: 2px 6px; background: #f3f4f6; border-radius: 4px; color: #666;">Node</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Hanger: Success Badge -->
+                            <div style="position: absolute; right: 5%; top: -30px; animation: swing 7s ease-in-out infinite reverse; transform-origin: top center;">
+                                <div style="width: 2px; height: 140px; background: rgba(79, 70, 229, 0.2); margin: 0 auto;"></div>
+                                <div style="
+                                    background: white;
+                                    padding: 12px 20px;
+                                    border-radius: 40px;
+                                    border: 1px solid #e0e0e0;
+                                    box-shadow: 0 10px 20px -5px rgba(0,0,0,0.1);
+                                    transform: rotate(3deg);
+                                    display: flex; align-items: center; gap: 10px;
+                                ">
+                                    <span style="font-size: 20px;">🚀</span>
+                                    <div>
+                                        <div style="font-size: 13px; font-weight: 700; color: var(--color-text-primary); line-height: 1;">Offer Accepted</div>
+                                        <div style="font-size: 10px; color: #34d399; font-weight: 500;">Just now</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                             <!-- Directional Arrow (New Request: Long Coiled) -->
+                            <div style="position: absolute; bottom: 2%; left: 5%; width: 300px; height: 300px; pointer-events: none; opacity: 0.8; z-index: 20;">
+                                <svg width="100%" height="100%" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">
+                                    <!-- Coiled path: Starts bottom-left, loops, ends top-right pointing to button -->
+                                    <path d="M20 280 C 50 250, 100 280, 120 240 C 140 200, 80 180, 100 150 C 120 120, 200 100, 250 50" 
+                                          stroke="#4f46e5" stroke-width="2" stroke-dasharray="8 6" stroke-linecap="round" fill="none" class="draw-arrow"/>
+                                    
+                                    <!-- Arrowhead -->
+                                    <path d="M220 50 L 250 50 L 240 80" stroke="#4f46e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    
+                                    <!-- Text -->
+                                    <text x="40" y="270" font-family="'Indie Flower', cursive, sans-serif" font-size="16" fill="#666" transform="rotate(-15 40 270)">Start here!</text>
+                                </svg>
+                                <style>
+                                    @keyframes drawArrow {
+                                        from { stroke-dashoffset: 600; opacity: 0; }
+                                        to { stroke-dashoffset: 0; opacity: 1; }
+                                    }
+                                    .draw-arrow {
+                                        animation: drawArrow 2.5s ease-out forwards 0.5s;
+                                        stroke-dashoffset: 600;
+                                    }
+                                </style>
+                            </div>
+                        </div>
+
+                         <div style="display: none;"> <!-- Hidden trigger for keyframes inject if needed elsewhere --> </div>
+                         <style>
+                            @keyframes swing {
+                                0% { transform: rotate(0deg) translateY(0); }
+                                25% { transform: rotate(1deg) translateY(2px); }
+                                75% { transform: rotate(-1deg) translateY(2px); }
+                                100% { transform: rotate(0deg) translateY(0); }
+                            }
+                         </style>
+
+                        <!-- Floating Elements (Distributed Everywhere) -->
+                        <div style="position: absolute; inset: 0; pointer-events: none; z-index: 5;">
+                            
+                            <!-- 1. Job Card (Top Right) -->
+                            <div style="
+                                position: absolute; 
+                                top: 15%; right: 5%; 
+                                transform: rotate(6deg); 
+                                width: 280px; 
+                                background: rgba(255, 255, 255, 0.95); 
+                                backdrop-filter: blur(10px);
+                                padding: 20px; 
+                                border-radius: 16px; 
+                                box-shadow: 0 20px 50px -10px rgba(0,0,0,0.1); 
+                                border: 1px solid rgba(255,255,255,0.5);
+                                animation: float 8s ease-in-out infinite;
+                            ">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                                    <div style="width: 40px; height: 40px; background: #f0f0f0; border-radius: 10px; display: grid; place-items: center;">🦄</div>
+                                    <span style="background: #e8f5e9; color: #2e7d32; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; height: fit-content;">98% Match</span>
+                                </div>
+                                <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 4px;">Senior Frontend</h3>
+                                <div style="display: flex; gap: 6px; margin-top: 12px;">
+                                    <span style="background: #f3f4f6; padding: 4px 8px; border-radius: 4px; font-size: 10px;">React</span>
+                                </div>
+                            </div>
+
+                            <!-- 2. Score Badge (Bottom Left) -->
+                            <div style="
+                                position: absolute; 
+                                bottom: 15%; left: 8%; 
+                                background: white; 
+                                padding: 12px; 
+                                border-radius: 50%; 
+                                width: 90px; height: 90px; 
+                                display: flex; flex-direction: column; align-items: center; justify-content: center;
+                                box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+                                animation: float 6s ease-in-out infinite 1s;
+                                border: 1px solid rgba(0,0,0,0.05);
+                            ">
+                                <span style="font-size: 24px; font-weight: 800; color: var(--color-primary);">100</span>
+                                <span style="font-size: 11px; text-transform: uppercase; color: #888;">Score</span>
+                            </div>
+
+                            <!-- 3. Status Pill (Top Left) -->
+                            <div style="
+                                position: absolute; 
+                                top: 20%; left: 5%; 
+                                background: var(--color-success); 
+                                color: white;
+                                padding: 10px 20px; 
+                                border-radius: 30px; 
+                                font-weight: 600;
+                                font-size: 14px;
+                                box-shadow: 0 10px 25px rgba(46, 125, 50, 0.3);
+                                animation: float 7s ease-in-out infinite 2s;
+                                transform: rotate(-8deg);
+                            ">
+                                ✅ Applied Successfully
+                            </div>
+
+                            <!-- 4. Tech Stack (Bottom Right) -->
+                            <div style="
+                                position: absolute; 
+                                bottom: 20%; right: 10%; 
+                                background: #1e1e1e; 
+                                color: #a5d6ff;
+                                padding: 16px; 
+                                border-radius: 12px; 
+                                font-family: monospace;
+                                font-size: 13px;
+                                box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+                                animation: float 9s ease-in-out infinite 0.5s;
+                                transform: rotate(-5deg);
+                            ">
+                                &lt;Job id="priority" /&gt;
+                            </div>
+
+                             <!-- 5. Notification (Mid Right) -->
+                            <div style="
+                                position: absolute; 
+                                top: 45%; right: 2%; 
+                                background: white; 
+                                padding: 12px 16px; 
+                                border-radius: 12px; 
+                                display: flex; gap: 12px; align-items: center;
+                                box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+                                animation: float 6s ease-in-out infinite 3s;
+                                opacity: 0.9;
+                            ">
+                                <div style="width: 10px; height: 10px; background: red; border-radius: 50%;"></div>
+                                <span style="font-size: 13px; font-weight: 500;">New Match Found</span>
+                            </div>
+
+                            <!-- 6. Search Bar (Mid Left) -->
+                            <div style="
+                                position: absolute; 
+                                top: 50%; left: 2%; 
+                                background: white; 
+                                padding: 10px 20px; 
+                                border-radius: 50px; 
+                                width: 200px;
+                                display: flex; align-items: center; gap: 12px;
+                                box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+                                animation: float 10s ease-in-out infinite 1.5s;
+                                transform: rotate(4deg);
+                                opacity: 0.9;
+                            ">
+                                <span style="font-size: 14px;">🔍</span>
+                                <div style="height: 6px; width: 60%; background: #f3f4f6; border-radius: 3px;"></div>
+                            </div>
+
+                        </div>
+                    </div>
+                    
+                    <style>
+                        @keyframes float {
+                            0% { transform: translateY(0px) rotate(0deg); }
+                            50% { transform: translateY(-15px) rotate(1deg); }
+                            100% { transform: translateY(0px) rotate(0deg); }
+                        }
+                    </style>
+                `;
+            }
+
+            function renderSettings() {
+                const p = window.state.prefs;
+
+                // Helpers for UI state
+                const isMode = (m) => p.preferredMode.includes(m) ? 'checked' : '';
+
+                // Ensure skills/roles are arrays
+                let currentSkills = Array.isArray(p.skills) ? p.skills : (p.skills ? p.skills.split(',').map(s => s.trim()).filter(s => s) : []);
+                let currentRoles = Array.isArray(p.roleKeywords) ? p.roleKeywords : (p.roleKeywords ? p.roleKeywords.split(',').map(s => s.trim()).filter(s => s) : []);
+
+                // Setup Tag Render Logic
+                setTimeout(() => {
+                    // --- LOCATION TAGS ---
+                    const locContainer = document.getElementById('loc-tags');
+                    const locInput = document.getElementById('loc-input');
+
+                    if (locContainer && locInput) {
+                        const renderLocTags = () => {
+                            locContainer.innerHTML = p.preferredLocations.map(loc => `
+                                <span class="tag-chip">
+                                    ${loc}
+                                    <span class="remove-tag" onclick="removeLocationTag('${loc}')">&times;</span>
+                                </span>
+                             `).join('');
+                            locContainer.appendChild(locInput);
+                            locInput.value = '';
+                        };
+                        renderLocTags();
+
+                        locInput.addEventListener('keydown', (e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                const val = locInput.value.trim();
+                                if (val && !p.preferredLocations.includes(val)) {
+                                    p.preferredLocations.push(val);
+                                    window.state.prefs.preferredLocations = p.preferredLocations;
+                                    localStorage.setItem('jobTrackerPreferences', JSON.stringify(window.state.prefs));
+                                    renderLocTags();
+                                    locInput.focus();
+                                } else if (p.preferredLocations.includes(val)) locInput.value = '';
+                            }
+                            if (e.key === 'Backspace' && locInput.value === '' && p.preferredLocations.length > 0) {
+                                p.preferredLocations.pop();
+                                window.state.prefs.preferredLocations = p.preferredLocations;
+                                localStorage.setItem('jobTrackerPreferences', JSON.stringify(window.state.prefs));
+                                renderLocTags();
+                                locInput.focus();
+                            }
+                        });
+                    }
+
+                    // --- ROLE TAGS ---
+                    const roleContainer = document.getElementById('roles-tags');
+                    const roleInput = document.getElementById('roles-input');
+
+                    if (roleContainer && roleInput) {
+                        const renderRoleTags = () => {
+                            roleContainer.innerHTML = currentRoles.map(role => `
+                                <span class="tag-chip" style="background: #e0f2f1; color: #00695c;">
+                                    ${role}
+                                    <span class="remove-tag" onclick="removeRoleTag('${role}')" style="color: #00695c;">&times;</span>
+                                </span>
+                             `).join('');
+                            roleContainer.appendChild(roleInput);
+                            roleInput.value = '';
+                        };
+                        renderRoleTags();
+
+                        roleInput.addEventListener('keydown', (e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                const val = roleInput.value.trim();
+                                if (val && !currentRoles.includes(val)) {
+                                    currentRoles.push(val);
+                                    window.state.prefs.roleKeywords = currentRoles;
+                                    localStorage.setItem('jobTrackerPreferences', JSON.stringify(window.state.prefs));
+                                    renderRoleTags();
+                                    roleInput.focus();
+                                } else if (currentRoles.includes(val)) roleInput.value = '';
+                            }
+                            if (e.key === 'Backspace' && roleInput.value === '' && currentRoles.length > 0) {
+                                currentRoles.pop();
+                                window.state.prefs.roleKeywords = currentRoles;
+                                localStorage.setItem('jobTrackerPreferences', JSON.stringify(window.state.prefs));
+                                renderRoleTags();
+                                roleInput.focus();
+                            }
+                        });
+                    }
+
+                    // --- SKILLS TAGS ---
+                    const skillContainer = document.getElementById('skills-tags');
+                    const skillInput = document.getElementById('skills-input');
+
+                    if (skillContainer && skillInput) {
+                        const renderSkillTags = () => {
+                            skillContainer.innerHTML = currentSkills.map(skill => `
+                                <span class="tag-chip" style="background: #f3e5f5; color: #7b1fa2;">
+                                    ${skill}
+                                    <span class="remove-tag" onclick="removeSkillTag('${skill}')" style="color: #7b1fa2;">&times;</span>
+                                </span>
+                             `).join('');
+                            skillContainer.appendChild(skillInput);
+                            skillInput.value = '';
+                        };
+                        renderSkillTags();
+
+                        skillInput.addEventListener('keydown', (e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                const val = skillInput.value.trim();
+                                if (val && !currentSkills.includes(val)) {
+                                    currentSkills.push(val);
+                                    window.state.prefs.skills = currentSkills;
+                                    localStorage.setItem('jobTrackerPreferences', JSON.stringify(window.state.prefs));
+                                    renderSkillTags();
+                                    skillInput.focus();
+                                } else if (currentSkills.includes(val)) skillInput.value = '';
+                            }
+                            if (e.key === 'Backspace' && skillInput.value === '' && currentSkills.length > 0) {
+                                currentSkills.pop();
+                                window.state.prefs.skills = currentSkills;
+                                localStorage.setItem('jobTrackerPreferences', JSON.stringify(window.state.prefs));
+                                renderSkillTags();
+                                skillInput.focus();
+                            }
+                        });
+                    }
+
+                    // --- SLIDER GRADIENT & TOOLTIP ---
+                    const slider = document.getElementById('s_score');
+                    const tooltip = document.getElementById('s_score_tooltip');
+
+                    if (slider && tooltip) {
+                        const updateSlider = () => {
+                            const val = slider.value;
+                            const min = slider.min ? slider.min : 0;
+                            const max = slider.max ? slider.max : 100;
+                            const newVal = Number(((val - min) * 100) / (max - min));
+
+                            const colorStart = '#6366f1';
+                            const colorEnd = '#d946ef';
+
+                            slider.style.background = `linear-gradient(to right, ${colorStart} 0%, ${colorEnd} ${val}%, #e2e8f0 ${val}%, #e2e8f0 100%)`;
+
+                            // Explicitly set text content to ensure it's not empty
+                            tooltip.textContent = val + '%';
+
+                            // Position Logic
+                            tooltip.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
+                        };
+
+                        // Interaction Logic
+                        const showTooltip = () => tooltip.classList.add('visible');
+                        const hideTooltip = () => tooltip.classList.remove('visible');
+
+                        slider.addEventListener('input', updateSlider);
+
+                        // Desktop
+                        slider.addEventListener('mousedown', () => { showTooltip(); updateSlider(); });
+                        slider.addEventListener('mouseup', hideTooltip);
+                        slider.addEventListener('mouseleave', hideTooltip);
+
+                        // Mobile
+                        slider.addEventListener('touchstart', () => { showTooltip(); updateSlider(); }, { passive: true });
+                        slider.addEventListener('touchend', hideTooltip);
+
+                        updateSlider(); // Init gradient
+                    }
+
+                }, 0);
+
+                // Global remove helpers
+                window.removeLocationTag = (loc) => {
+                    window.state.prefs.preferredLocations = window.state.prefs.preferredLocations.filter(l => l !== loc);
+                    localStorage.setItem('jobTrackerPreferences', JSON.stringify(window.state.prefs));
+                    renderSettings();
+                };
+
+                window.removeSkillTag = (skill) => {
+                    currentSkills = currentSkills.filter(s => s !== skill);
+                    window.state.prefs.skills = currentSkills;
+                    localStorage.setItem('jobTrackerPreferences', JSON.stringify(window.state.prefs));
+                    renderSettings();
+                };
+
+                window.removeRoleTag = (role) => {
+                    currentRoles = currentRoles.filter(r => r !== role);
+                    window.state.prefs.roleKeywords = currentRoles;
+                    localStorage.setItem('jobTrackerPreferences', JSON.stringify(window.state.prefs));
+                    renderSettings();
+                };
+
+                root.innerHTML = `
+                   <div class="settings-container" style="max-width: 600px; margin: 0 auto;">
+                        <div style="text-align: center; margin-bottom: 32px;">
+                            <h2 style="font-family: var(--font-heading); font-size: 28px; margin-bottom: 8px;">Tailor Your Feed</h2>
+                            <p style="color: var(--color-text-secondary);">Customize your preferences to find the perfect role.</p>
+                        </div>
+                        
+                        <div class="card" style="padding: 32px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 24px rgba(0,0,0,0.04);">
+                            
+                            <!-- Section: Role & Experience -->
+                            <div style="margin-bottom: 32px;">
+                                <h3 style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #aaa; margin-bottom: 16px; font-weight: 600;">Target Role</h3>
+                                <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; margin-bottom: 16px;">
+                                    <div class="form-group" style="margin-bottom: 0;">
+                                        <label class="form-label">Role Keywords</label>
+                                         <div class="tag-input-container" id="roles-tags" onclick="document.getElementById('roles-input').focus()">
+                                            <!-- Tags injected here -->
+                                            <input type="text" id="roles-input" class="tag-input" placeholder="Role...">
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 0;">
+                                        <label class="form-label">Experience</label>
+                                        <select id="s_exp" class="select-field">
+                                            <option value="Fresher" ${p.experienceLevel === 'Fresher' ? 'selected' : ''}>Fresher</option>
+                                            <option value="0-1" ${p.experienceLevel === '0-1' ? 'selected' : ''}>0-1 Years</option>
+                                            <option value="1-3" ${p.experienceLevel === '1-3' ? 'selected' : ''}>1-3 Years</option>
+                                            <option value="3-5" ${p.experienceLevel === '3-5' ? 'selected' : ''}>3-5 Years</option>
+                                            <option value="5+" ${p.experienceLevel === '5+' ? 'selected' : ''}>5+ Years</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-hint" style="margin-top: -8px; margin-bottom: 16px;">Keywords help us score matches.</div>
+                            </div>
+
+                            <hr style="border: 0; border-top: 1px solid #f0f0f0; margin: 0 -32px 32px -32px;">
+
+                            <!-- Section: Location & Mode -->
+                            <div style="margin-bottom: 32px;">
+                                <h3 style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #aaa; margin-bottom: 16px; font-weight: 600;">Location & Mode</h3>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Preferred Locations</label>
+                                    <div class="tag-input-container" id="loc-tags" onclick="document.getElementById('loc-input').focus()">
+                                        <!-- Tags injected here -->
+                                        <input type="text" id="loc-input" class="tag-input" list="loc-suggestions" placeholder="Type & Enter...">
+                                    </div>
+                                    <datalist id="loc-suggestions">
+                                        <option value="Bangalore">
+                                        <option value="Pune">
+                                        <option value="Hyderabad">
+                                        <option value="Remote">
+                                        <option value="Mumbai">
+                                        <option value="Gurgaon">
+                                        <option value="Chennai">
+                                        <option value="Noida">
+                                    </datalist>
+                                    <div class="form-hint">Type a location and press Enter to add.</div>
+                                </div>
+                                
+                                <div class="form-group" style="margin-top: 20px;">
+                                    <label class="form-label">Work Mode</label>
+                                    <div class="checkbox-group" style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                        <label class="checkbox-label" style="font-weight: 500;"><input type="checkbox" name="mode" value="Remote" ${isMode('Remote')} accent-color="var(--color-primary)"> 🏠 Remote</label>
+                                        <label class="checkbox-label" style="font-weight: 500;"><input type="checkbox" name="mode" value="Hybrid" ${isMode('Hybrid')} accent-color="var(--color-primary)"> 🏢 Hybrid</label>
+                                        <label class="checkbox-label" style="font-weight: 500;"><input type="checkbox" name="mode" value="Onsite" ${isMode('Onsite')} accent-color="var(--color-primary)"> 📍 Onsite</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr style="border: 0; border-top: 1px solid #f0f0f0; margin: 0 -32px 32px -32px;">
+
+                            <!-- Section: Skills & Scoring -->
+                            <div style="margin-bottom: 24px;">
+                                <h3 style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #aaa; margin-bottom: 16px; font-weight: 600;">Skills & Criteria</h3>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Your Skills</label>
+                                    <div class="tag-input-container" id="skills-tags" onclick="document.getElementById('skills-input').focus()">
+                                        <!-- Tags injected here -->
+                                        <input type="text" id="skills-input" class="tag-input" list="skills-suggestions" placeholder="Type & Enter...">
+                                    </div>
+                                    <datalist id="skills-suggestions">
+                                        <option value="React">
+                                        <option value="Node.js">
+                                        <option value="Python">
+                                        <option value="Java">
+                                        <option value="AWS">
+                                        <option value="Docker">
+                                        <option value="Kubernetes">
+                                        <option value="TypeScript">
+                                        <option value="Go">
+                                        <option value="SQL">
+                                        <option value="MongoDB">
+                                        <option value="Figma">
+                                    </datalist>
+                                    <div class="form-hint">Type a skill and press Enter to add.</div>
+                                </div>
+                                
+                                <div class="form-group" style="margin-top: 24px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                                        <label class="form-label" style="margin: 0;">Match Threshold</label>
+                                        <!-- Removed static value, using floating tooltip -->
+                                    </div>
+                                    <!-- Container has margin-top in CSS now -->
+                                    <div class="range-slider-container">
+                                        <div id="s_score_tooltip" class="slider-tooltip"></div>
+                                        <input type="range" id="s_score" class="styled-slider" min="0" max="100" value="${p.minMatchScore}">
+                                    </div>
+                                    <div class="form-hint">Only show jobs with a match score higher than this.</div>
+                                </div>
+                            </div>
+                            
+                            <div style="text-align: right; margin-top: 40px; padding-top: 20px; border-top: 1px solid #f0f0f0;">
+                                <button class="btn btn-primary" onclick="saveSettings()" style="width: 100%; justify-content: center; padding: 14px; font-size: 16px;">Save Preferences</button>
+                            </div>
+                        </div>
+                        
+                        <p style="text-align: center; color: #aaa; font-size: 12px; margin-top: 24px;">
+                            Preferences are saved locally to your browser.
+                        </p>
+                   </div>
+                `;
+            }
+
+            window.saveSettings = () => {
+                // Roles already synced
+                const roles = window.state.prefs.roleKeywords;
+                // Locs already synced
+                const locs = window.state.prefs.preferredLocations;
+
+                const modes = Array.from(document.getElementsByName('mode')).filter(c => c.checked).map(c => c.value);
+                const exp = document.getElementById('s_exp').value;
+                // Skills already synced
+                const skills = window.state.prefs.skills;
+                const score = parseInt(document.getElementById('s_score').value);
+
+                const newPrefs = {
+                    roleKeywords: roles,
+                    preferredLocations: locs,
+                    preferredMode: modes,
+                    experienceLevel: exp,
+                    skills: skills,
+                    minMatchScore: score
+                };
+
+                window.state.prefs = newPrefs;
+                localStorage.setItem('jobTrackerPreferences', JSON.stringify(newPrefs));
+                alert('Preferences saved!');
+                navigate('dashboard');
+            };
+
+            function renderDashboard() {
+                const p = window.state.prefs;
+                const f = window.state.filters;
+
+                // 1. Initial Render (Shell)
+                // We check for the specific ID of the shell div
+                if (!document.getElementById('dashboard-shell')) {
+                    root.innerHTML = `
+                        <div id="dashboard-shell">
+                            <div class="filter-header">
+                               <h2 style="font-family: var(--font-heading); font-size: 20px;">Jobs (<span id="job-count">0</span>)</h2>
+                               <label class="toggle-switch">
+                                    <input type="checkbox" id="f-matches-toggle" class="toggle-input" onchange="updateFilter('showMatchesOnly', this.checked)">
+                                    <div class="toggle-slider"></div>
+                                    <span class="toggle-label">Show only matches (> <span id="match-threshold-display">${p.minMatchScore}</span>)</span>
+                                </label>
+                            </div>
+
+                            <div class="filter-bar">
+                                <input type="text" id="f-text" placeholder="Search role or company..." class="input-field" oninput="updateFilter('text', this.value)" style="flex: 2;">
+                                
+                                <div class="custom-select-wrapper">
+                                    <div id="c-loc" class="custom-select">
+                                        <div class="custom-select-trigger"><span>Location</span><div class="arrow"></div></div>
+                                        <div class="custom-options">
+                                            <span class="custom-option" data-value="">All Locations</span>
+                                            <span class="custom-option" data-value="Bangalore">Bangalore</span>
+                                            <span class="custom-option" data-value="Pune">Pune</span>
+                                            <span class="custom-option" data-value="Hyderabad">Hyderabad</span>
+                                            <span class="custom-option" data-value="Remote">Remote</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="custom-select-wrapper">
+                                    <div id="c-mode" class="custom-select">
+                                        <div class="custom-select-trigger"><span>Mode</span><div class="arrow"></div></div>
+                                        <div class="custom-options">
+                                            <span class="custom-option" data-value="">Any Mode</span>
+                                            <span class="custom-option" data-value="Remote">Remote</span>
+                                            <span class="custom-option" data-value="Hybrid">Hybrid</span>
+                                            <span class="custom-option" data-value="Onsite">Onsite</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="custom-select-wrapper">
+                                    <div id="c-exp" class="custom-select">
+                                        <div class="custom-select-trigger"><span>Experience</span><div class="arrow"></div></div>
+                                        <div class="custom-options">
+                                            <span class="custom-option" data-value="">Any Experience</span>
+                                            <span class="custom-option" data-value="Fresher">Fresher</span>
+                                            <span class="custom-option" data-value="0-1">0-1 Years</span>
+                                            <span class="custom-option" data-value="1-3">1-3 Years</span>
+                                            <span class="custom-option" data-value="3-5">3-5 Years</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="custom-select-wrapper">
+                                    <div id="c-source" class="custom-select">
+                                        <div class="custom-select-trigger"><span>Source</span><div class="arrow"></div></div>
+                                        <div class="custom-options">
+                                            <span class="custom-option" data-value="">All Sources</span>
+                                            <span class="custom-option" data-value="LinkedIn">LinkedIn</span>
+                                            <span class="custom-option" data-value="Naukri">Naukri</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="custom-select-wrapper">
+                                    <div id="c-status" class="custom-select">
+                                        <div class="custom-select-trigger"><span>Status: All</span><div class="arrow"></div></div>
+                                        <div class="custom-options">
+                                            <span class="custom-option" data-value="All">Status: All</span>
+                                            <span class="custom-option" data-value="Not Applied">Not Applied</span>
+                                            <span class="custom-option" data-value="Applied">Applied</span>
+                                            <span class="custom-option" data-value="Rejected">Rejected</span>
+                                            <span class="custom-option" data-value="Selected">Selected</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="custom-select-wrapper">
+                                    <div id="c-sort" class="custom-select">
+                                        <div class="custom-select-trigger"><span>Sort: Latest</span><div class="arrow"></div></div>
+                                        <div class="custom-options">
+                                            <span class="custom-option" data-value="Latest">Latest</span>
+                                            <span class="custom-option" data-value="Match Score">Match Score</span>
+                                            <span class="custom-option" data-value="Salary">Salary</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="job-grid-container"></div>
+                        </div>
+                    `;
+
+                    // Initialize Custom Selects Logic
+                    setTimeout(() => {
+                        document.querySelectorAll('.custom-select').forEach(select => {
+                            const trigger = select.querySelector('.custom-select-trigger');
+                            const options = select.querySelectorAll('.custom-option');
+                            const key = select.id.replace('c-', ''); // e.g., 'loc' from 'c-loc'
+
+                            // Toggle
+                            trigger.addEventListener('click', (e) => {
+                                e.stopPropagation(); // Stop bubble to window
+                                // Close others
+                                document.querySelectorAll('.custom-select').forEach(other => {
+                                    if (other !== select) other.classList.remove('open');
+                                });
+                                select.classList.toggle('open');
+                            });
+
+                            // Select Option
+                            options.forEach(option => {
+                                option.addEventListener('click', function () {
+                                    select.classList.remove('open');
+                                    // Update styling
+                                    options.forEach(o => o.classList.remove('selected'));
+                                    this.classList.add('selected');
+
+                                    // Update Trigger Text (optional, or keep label + value approach)
+                                    // Let's show the selected value if not empty, else the Label (derived from id maybe?)
+                                    const val = this.getAttribute('data-value');
+                                    const text = this.textContent;
+
+                                    // Smart Label Update
+                                    // If default option selected ("All Locations"), revert to label? 
+                                    // For now, let's just show the text selected.
+                                    trigger.querySelector('span').textContent = text;
+
+                                    // Trigger Filter Update
+                                    // We need to map key -> filter prop
+                                    // Keys: loc, mode, exp, source, status
+                                    updateFilter(key, val);
+                                });
+                            });
+                        });
+
+                        // Click Outside to Close
+                        window.addEventListener('click', function (e) {
+                            if (!e.target.closest('.custom-select')) {
+                                document.querySelectorAll('.custom-select').forEach(s => s.classList.remove('open'));
+                            }
+                        });
+                    }, 0);
+                }
+
+                // Sync UI with State (Updated for Custom Dropdowns)
+                setTimeout(() => {
+                    const toggle = document.getElementById('f-matches-toggle');
+                    if (toggle) toggle.checked = f.showMatchesOnly;
+
+                    const scoreDisplay = document.getElementById('match-threshold-display');
+                    if (scoreDisplay) scoreDisplay.innerText = p.minMatchScore;
+
+                    const elText = document.getElementById('f-text');
+                    if (elText && document.activeElement !== elText) elText.value = f.text;
+
+                    // Sync Custom Dropdowns
+                    const syncDropdown = (id, val) => {
+                        const wrapper = document.getElementById(id); // e.g., c-loc
+                        if (!wrapper) return;
+
+                        // Find option with data-value == val
+                        // If val is empty, find the default "All" option (usually first or empty val)
+                        const option = Array.from(wrapper.querySelectorAll('.custom-option')).find(opt => opt.getAttribute('data-value') === val)
+                            || wrapper.querySelector('.custom-option'); // Default fallback
+
+                        if (option) {
+                            wrapper.querySelector('.custom-select-trigger span').textContent = option.textContent;
+                            wrapper.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
+                            option.classList.add('selected');
+                        }
+                    };
+
+                    syncDropdown('c-loc', f.loc);
+                    syncDropdown('c-mode', f.mode);
+                    syncDropdown('c-exp', f.exp);
+                    syncDropdown('c-source', f.source);
+                    syncDropdown('c-status', f.status || 'All');
+                    syncDropdown('c-sort', f.sort || 'Latest'); // Restore Sort Sync
+                }, 0);
+
+                renderDashboardGrid();
+            }
+
+
+
+            function initializeCardDropdowns(container) {
+                // Activate AutoAnimate
+                requestAnimationFrame(() => {
+                    const grid = container.querySelector('.job-grid');
+                    if (grid && window.autoAnimate) {
+                        window.autoAnimate(grid);
+                    }
+
+                    // Initialize ID-based card selects
+                    container.querySelectorAll('.card-select').forEach(select => {
+                        const trigger = select.querySelector('.custom-select-trigger');
+                        const options = select.querySelectorAll('.custom-option');
+
+                        // Remove existing listeners to prevent duplication if re-initialized (basic check)
+                        // In this simple implementation, we assume re-render clears elements so listeners are fresh.
+
+                        trigger.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            // Close others
+                            document.querySelectorAll('.custom-select').forEach(other => {
+                                if (other !== select) {
+                                    other.classList.remove('open');
+                                    // Also remove active-dropdown from parent card if applicable
+                                    const parentCard = other.closest('.job-card');
+                                    if (parentCard) parentCard.classList.remove('active-dropdown');
+                                }
+                            });
+                            select.classList.toggle('open');
+
+                            // Toggle z-index class on parent card
+                            const card = select.closest('.job-card');
+                            if (card) {
+                                if (select.classList.contains('open')) {
+                                    card.classList.add('active-dropdown');
+                                } else {
+                                    card.classList.remove('active-dropdown');
+                                }
+                            }
+                        });
+
+
+                        options.forEach(opt => {
+                            opt.addEventListener('click', function (e) {
+                                e.stopPropagation(); // prevent card click
+                                select.classList.remove('open');
+
+                                // Close dropdown styles
+                                const card = select.closest('.job-card');
+                                if (card) card.classList.remove('active-dropdown');
+
+                                // Get value and Update Status
+                                const val = this.getAttribute('data-value');
+                                const jobId = select.id.replace('status-', '');
+
+                                if (window.updateStatus && jobId && val) {
+                                    window.updateStatus(jobId, val);
+
+                                    // Update visual selection immediately for responsiveness
+                                    const triggerSpan = trigger.querySelector('span');
+                                    if (triggerSpan) triggerSpan.textContent = val;
+                                }
+                            });
+                        });
+                    });
+                });
+            }
+
+            function renderDashboardGrid(jobs = JOBS) {
+                const p = window.state.prefs;
+                const f = window.state.filters;
+
+                // 1. Score jobs
+                const jobsWithScore = jobs.map(j => ({ ...j, matchScore: calculateMatchScore(j, p) }));
+
+                // 2. Filter logic
+                const validJobs = jobsWithScore.filter(j => {
+                    const textMatch = !f.text || j.title.toLowerCase().includes(f.text.toLowerCase()) || j.company.toLowerCase().includes(f.text.toLowerCase());
+                    const locMatch = !f.loc || j.location.includes(f.loc);
+                    const modeMatch = !f.mode || j.mode === f.mode;
+                    const expMatch = !f.exp || j.experience === f.exp;
+                    const sourceMatch = !f.source || j.source === f.source;
+
+                    // Status Filter (Safe Access)
+                    const statusObj = window.state.status[j.id];
+                    const jobStatus = (statusObj && typeof statusObj === 'object') ? statusObj.status : (statusObj || 'Not Applied');
+                    const statusMatch = (f.status === 'All' || !f.status) || jobStatus === f.status;
+
+                    // Match Threshold Filter
+                    // ONLY filter by score if the toggle is ON
+                    const scoreMatch = !f.showMatchesOnly || j.matchScore >= p.minMatchScore;
+
+                    return textMatch && locMatch && modeMatch && expMatch && sourceMatch && statusMatch && scoreMatch;
+                });
+
+                // 3. Sorting
+                validJobs.sort((a, b) => {
+                    if (f.sort === 'Match Score') return b.matchScore - a.matchScore;
+                    if (f.sort === 'Salary') return 0; // Salary string parsing omitted for brevity
+                    // Latest default
+                    return a.postedDaysAgo - b.postedDaysAgo;
+                });
+
+                // Update Count
+                const countSpan = document.getElementById('job-count');
+                if (countSpan) countSpan.innerText = validJobs.length;
+
+                // --- PAGINATION LOGIC ---
+                const totalItems = validJobs.length;
+                const totalPages = Math.ceil(totalItems / window.state.pagination.itemsPerPage);
+
+                // Ensure current page is valid
+                if (window.state.pagination.page > totalPages && totalPages > 0) {
+                    window.state.pagination.page = totalPages;
+                }
+                if (window.state.pagination.page < 1) window.state.pagination.page = 1;
+
+                const startIdx = (window.state.pagination.page - 1) * window.state.pagination.itemsPerPage;
+                const endIdx = startIdx + window.state.pagination.itemsPerPage;
+                const paginatedJobs = validJobs.slice(startIdx, endIdx);
+
+                let content = '';
+
+                if (validJobs.length === 0) {
+                    content = `
+                        <div class="empty-state">
+                            <div class="empty-icon">🔍</div>
+                            <h2>No jobs found</h2>
+                            <p>Try adjusting your filters or lowering the match threshold.</p>
+                        </div>
+                    `;
+                } else {
+                    content += `<div class="job-grid">${paginatedJobs.map(renderJobCard).join('')}</div>`;
+
+                    // Pagination Layout
+                    if (totalPages > 1) {
+                        const page = window.state.pagination.page;
+                        content += `
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 32px; padding-bottom: 40px;">
+                                <button class="btn btn-outline" ${page === 1 ? 'disabled' : ''} onclick="changePage(${page - 1})" style="padding: 8px 16px;">Previous</button>
+                                <span style="font-weight: 600; color: var(--color-text-secondary);">Page ${page} of ${totalPages}</span>
+                                <button class="btn btn-outline" ${page === totalPages ? 'disabled' : ''} onclick="changePage(${page + 1})" style="padding: 8px 16px;">Next</button>
+                            </div>
+                        `;
+                    }
+                }
+
+                const gridContainer = document.getElementById('job-grid-container');
+                if (gridContainer) {
+                    gridContainer.innerHTML = content;
+                    initializeCardDropdowns(gridContainer);
+                }
+            }
+
+            function renderJobCard(job) {
+                const isSaved = window.state.saved.includes(job.id);
+                // Badge Logic
+                const matchBadge = getMatchBadge(job.matchScore);
+
+                // Status Logic
+                const statusObj = window.state.status[job.id];
+                const currentStatus = (statusObj && typeof statusObj === 'object') ? statusObj.status : (statusObj || 'Not Applied');
+                const statusClass = `status-${currentStatus.toLowerCase().replace(' ', '-')}`;
+
+                return `
+                    <div class="job-card">
+                        <div class="job-header">
+                            <div>
+                                <div class="job-title">${job.title}</div>
+                                <div class="job-company">${job.company} ${matchBadge}</div>
+                            </div>
+                            <div class="posted-badge">${job.postedDaysAgo}d ago</div>
+                        </div>
+                        
+                        <div class="job-meta">
+                            <span class="meta-item">📍 ${job.location}</span>
+                            <span class="meta-item">💼 ${job.mode}</span>
+                            <span class="meta-item">🎓 ${job.experience}</span>
+                        </div>
+
+                        <div class="job-meta">
+                            <span class="meta-item">💰 ${job.salaryRange}</span>
+                            <span class="meta-item status-badge ${statusClass}">${currentStatus}</span>
+                        </div>
+                        
+                        <div style="margin-top:auto; margin-bottom:12px;">
+                            <span class="source-badge">via ${job.source}</span>
+                        </div>
+
+                        <div class="job-actions">
+                            <!-- Custom Status Dropdown -->
+                            <div class="custom-select-wrapper" style="width: auto; min-width: 140px;">
+                                <div id="status-${job.id}" class="custom-select card-select" onclick="event.stopPropagation()">
+                                    <div class="custom-select-trigger" style="padding: 6px 10px; height: 32px; font-size: 12px;">
+                                        <span>${currentStatus}</span>
+                                        <div class="arrow"></div>
+                                    </div>
+                                    <div class="custom-options">
+                                        <span class="custom-option" data-value="Not Applied">Not Applied</span>
+                                        <span class="custom-option" data-value="Applied">Applied</span>
+                                        <span class="custom-option" data-value="Rejected">Rejected</span>
+                                        <span class="custom-option" data-value="Selected">Selected</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn ${isSaved ? 'btn-primary' : 'btn-outline'}" onclick="toggleSave('${job.id}')">${isSaved ? 'Saved' : 'Save'}</button>
+                            <button class="btn btn-outline" onclick="openModal('${job.id}')">View</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderSaved() {
+                const savedJobs = JOBS.filter(j => window.state.saved.includes(j.id));
+                // Precalculate scores for display even in saved
+                const p = window.state.prefs;
+                const jobsWithScore = savedJobs.map(j => ({ ...j, matchScore: calculateMatchScore(j, p) }));
+
+                if (savedJobs.length === 0) {
+                    root.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">🔖</div>
+                            <h2>No saved jobs yet</h2>
+                            <p>Jobs you save will appear here for quick access.</p>
+                            <button class="btn btn-primary" style="margin-top:20px" onclick="navigate('dashboard')">Browse Jobs</button>
+                        </div>
+                    `;
+                } else {
+                    root.innerHTML = `
+                        <h2 class="context-title" style="margin-bottom:20px; font-family:var(--font-heading)">Saved Jobs (${savedJobs.length})</h2>
+                        <div class="job-grid" id="saved-job-grid">
+                            ${jobsWithScore.map(renderJobCard).join('')}
+                        </div>
+                    `;
+
+                    // Initialize dropdowns for the saved grid
+                    const savedGrid = document.getElementById('saved-job-grid');
+                    if (savedGrid) {
+                        initializeCardDropdowns(savedGrid.parentElement); // Pass parent or container that holds the grid
+                    }
+                }
+            }
+
+            function renderTest() {
+                const s = window.state.testStatus;
+                const total = Object.keys(s).length;
+                const passed = Object.values(s).filter(v => v).length;
+                const progress = Math.round((passed / total) * 100);
+
+                const items = [
+                    { key: 'prefsPersist', label: 'Preferences persistence', tip: 'Change settings, refresh page, verify settings are saved.' },
+                    { key: 'matchScoreCalc', label: 'Match score calculation', tip: 'Check if matching logic assigns points based on keywords.' },
+                    { key: 'matchesToggle', label: 'Match toggle functionality', tip: 'Switch toggle on/off, verify low score jobs hide/show.' },
+                    { key: 'savePersist', label: 'Save job persistence', tip: 'Save a job, refresh, check Saved tab.' },
+                    { key: 'applyNewTab', label: 'Apply link behavior', tip: 'Click Apply button, ensure new tab opens.' },
+                    { key: 'statusPersist', label: 'Status update persistence', tip: 'Change status to Applied, refresh, verify it remains Applied.' },
+                    { key: 'statusFilter', label: 'Status filter logic', tip: 'Filter by Applied, ensure only Applied jobs are shown.' },
+                    { key: 'digestGen', label: 'Digest generation', tip: 'Check Digest tab, count should be 10, high scores.' },
+                    { key: 'digestPersist', label: 'Digest persistence', tip: 'Refresh page, Digest list should be identical.' },
+                    { key: 'noErrors', label: 'Console error check', tip: 'Open Console (F12), browse pages, ensure no red errors.' }
+                ];
+
+                root.innerHTML = `
+                    <div style="max-width: 800px; margin: 0 auto; padding-bottom: 60px;">
+                        <!-- Header & Progress -->
+                        <div style="text-align: center; margin-bottom: 40px;">
+                            <h2 style="font-family: var(--font-heading); font-size: 32px; margin-bottom: 12px; color: var(--color-text-primary);">System Diagnostics</h2>
+                            <p style="color: var(--color-text-secondary); margin-bottom: 32px;">Verify all system modules before launch.</p>
+                            
+                            <div style="position: relative; height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden; max-width: 400px; margin: 0 auto;">
+                                <div style="position: absolute; left: 0; top: 0; bottom: 0; width: ${progress}%; background: var(--color-primary); transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+                            </div>
+                            <div style="margin-top: 12px; font-weight: 600; color: var(--color-text-primary);">
+                                ${passed}/${total} Modules Verified
+                            </div>
+                        </div>
+
+                        <!-- Status Banner -->
+                        ${passed < total ? `
+                            <div style="background: #fffbeb; border: 1px solid #fcd34d; color: #92400e; padding: 16px; border-radius: var(--radius-md); margin-bottom: 32px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                <span style="font-size: 20px;">⚠️</span>
+                                <div>
+                                    <div style="font-weight: 600;">Validation Pending</div>
+                                    <div style="font-size: 14px; opacity: 0.9;">Complete all checks to unlock the customized shipping payload.</div>
+                                </div>
+                            </div>
+                        ` : `
+                            <div style="background: #ecfdf5; border: 1px solid #6ee7b7; color: #065f46; padding: 16px; border-radius: var(--radius-md); margin-bottom: 32px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                <span style="font-size: 20px;">✅</span>
+                                <div>
+                                    <div style="font-weight: 600;">All Systems Operational</div>
+                                    <div style="font-size: 14px; opacity: 0.9;">You are ready to proceed to the <a href="#" onclick="navigate('ship')" style="text-decoration: underline; font-weight: 700; color: inherit;">Ship Phase</a>.</div>
+                                </div>
+                            </div>
+                        `}
+
+                        <!-- Grid -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+                            ${items.map(i => `
+                                <div class="checklist-card ${s[i.key] ? 'checked' : ''}" onclick="updateTestStatus('${i.key}', !${s[i.key] || false})">
+                                    <div style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid ${s[i.key] ? 'var(--color-success)' : '#d1d5db'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: ${s[i.key] ? 'var(--color-success)' : 'transparent'}; transition: all 0.2s;">
+                                        ${s[i.key] ? '<span style="color: white; font-size: 14px;">✓</span>' : ''}
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <div style="font-weight: 500; color: var(--color-text-primary); margin-bottom: 2px; ${s[i.key] ? 'text-decoration: line-through; opacity: 0.6;' : ''}">${i.label}</div>
+                                        <div style="font-size: 12px; color: var(--color-text-secondary);">${i.tip}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div style="margin-top: 48px; text-align: center;">
+                            <button class="btn btn-outline" style="font-size: 13px; color: var(--color-text-secondary);" onclick="resetTests()">Reset Diagnostics</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderProof() {
+                const s = window.state.submission;
+                const t = window.state.testStatus;
+
+                // 8-Step Timeline
+                const steps = [
+                    { label: 'Project Initialized', done: true },
+                    { label: 'Design System Implementation', done: true },
+                    { label: 'Core Layout & Navigation', done: true },
+                    { label: 'Job Data & Components', done: true },
+                    { label: 'Matching Logic Engine', done: true },
+                    { label: 'Digest & Notification System', done: true },
+                    { label: 'Performance & Polish', done: true },
+                    { label: 'System Validation (Tests)', done: Object.values(t).every(v => v === true) }
+                ];
+
+                const isShipped = s.shipped;
+
+                root.innerHTML = `
+                    <div style="max-width: 900px; margin: 0 auto; padding-bottom: 80px;">
+                        
+                        <!-- Header -->
+                        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; padding-bottom: 24px; border-bottom: 1px solid var(--color-border);">
+                            <div>
+                                <div style="font-size: 13px; font-weight: 600; color: var(--color-primary); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px;">Project 1</div>
+                                <h1 style="font-family: var(--font-heading); font-size: 36px; line-height: 1.1;">Job Notification Tracker</h1>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 14px; color: var(--color-text-secondary); margin-bottom: 4px;">Current Status</div>
+                                ${isShipped
+                        ? '<span style="background:#dcfce7; color:#166534; padding:6px 16px; border-radius:20px; font-weight:600; font-size:14px; display:inline-flex; align-items:center; gap:6px;">🚀 Shipped</span>'
+                        : '<span style="background:#f3f4f6; color:#4b5563; padding:6px 16px; border-radius:20px; font-weight:600; font-size:14px;">In Progress</span>'
+                    }
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 300px 1fr; gap: 40px;">
+                            
+                            <!-- Left: Timeline -->
+                            <div>
+                                <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 24px;">Development Milestone</h2>
+                                <div class="timeline-container">
+                                    ${steps.map((step, i) => `
+                                        <div class="timeline-item ${step.done ? 'done' : ''}">
+                                            <div class="timeline-dot"></div>
+                                            <div style="font-size: 14px; font-weight: 500; color: ${step.done ? 'var(--color-text-primary)' : 'var(--color-text-secondary)'};">
+                                                ${step.label}
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                    <div class="timeline-item ${isShipped ? 'done' : ''}">
+                                        <div class="timeline-dot"></div>
+                                        <div style="font-size: 14px; font-weight: 700; color: ${isShipped ? 'var(--color-text-primary)' : 'var(--color-text-secondary)'};">
+                                            Ready for Shipping
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right: Form -->
+                            <div>
+                                <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 24px;">Artifact Manifest</h2>
+                                
+                                <div class="card" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); padding: 32px;">
+                                    <p style="font-size: 14px; color: var(--color-text-secondary); margin-bottom: 32px;">
+                                        Enter the destination URLs for your project artifacts. This information will be packaged with your submission.
+                                    </p>
+
+                                    <div style="display: grid; gap: 24px;">
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-weight: 600; font-size: 13px;">Lovable Project Link <span style="color:var(--color-accent)">*</span></label>
+                                            <input type="text" class="input-field" 
+                                                style="padding: 12px; background: #f9fafb;"
+                                                placeholder="https://lovable.dev/..." 
+                                                value="${s.lovableLink}" 
+                                                oninput="updateSubmission('lovableLink', this.value)"
+                                                ${s.shipped ? 'disabled' : ''}>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-weight: 600; font-size: 13px;">GitHub Repository Link <span style="color:var(--color-accent)">*</span></label>
+                                            <input type="text" class="input-field" 
+                                                style="padding: 12px; background: #f9fafb;"
+                                                placeholder="https://github.com/..." 
+                                                value="${s.githubLink}"
+                                                oninput="updateSubmission('githubLink', this.value)"
+                                                ${s.shipped ? 'disabled' : ''}>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" style="font-weight: 600; font-size: 13px;">Live Deployment URL <span style="color:var(--color-accent)">*</span></label>
+                                            <input type="text" class="input-field" 
+                                                style="padding: 12px; background: #f9fafb;"
+                                                placeholder="https://vercel.app/..." 
+                                                value="${s.deployLink}"
+                                                oninput="updateSubmission('deployLink', this.value)"
+                                                ${s.shipped ? 'disabled' : ''}>
+                                        </div>
+                                    </div>
+
+                                    <div style="margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--color-border); display: flex; justify-content: flex-end;">
+                                        ${!s.shipped ? `
+                                            <button class="btn btn-primary" onclick="shipProject()" style="padding: 14px 32px; font-size: 16px; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);">
+                                                Ship Project 🚀
+                                            </button>
+                                        ` : `
+                                            <div style="text-align: right;">
+                                                <div style="margin-bottom: 8px; color: var(--color-success); font-weight: 600; font-size: 14px;">
+                                                    Successfully Shipped on ${new Date(s.shippedAt).toLocaleDateString()}
+                                                </div>
+                                                <button class="btn btn-outline" onclick="copySubmission()" style="display: flex; align-items: center; gap: 8px;">
+                                                    <span>📋</span> Copy Final Submission
+                                                </button>
+                                            </div>
+                                        `}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderDigest() {
+                const p = window.state.prefs;
+
+                // 1. Check blocked state
+                if (!p.roleKeywords && p.preferredLocations.length === 0) {
+                    root.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">🛑</div>
+                            <h2>Personalization Required</h2>
+                            <p>Set your preferences to generate a personalized daily digest.</p>
+                            <button class="btn btn-primary" style="margin-top:20px" onclick="navigate('settings')">Set Preferences</button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const today = new Date().toISOString().split('T')[0];
+                const storageKey = `jobTrackerDigest_${today}`;
+                const storedDigest = localStorage.getItem(storageKey);
+
+                let digestJobs = [];
+                let isGenerated = false;
+
+                if (storedDigest) {
+                    const storedIds = JSON.parse(storedDigest);
+                    // Hydrate jobs
+                    digestJobs = storedIds.map(id => {
+                        const j = JOBS.find(x => x.id === id);
+                        return j ? { ...j, matchScore: calculateMatchScore(j, p) } : null;
+                    }).filter(j => j);
+                    isGenerated = true;
+                }
+
+                if (!isGenerated) {
+                    root.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📨</div>
+                            <h2>Your Daily Digest</h2>
+                            <p>Get a curated list of the top 10 jobs matching your profile.</p>
+                            <p style="font-size:12px; color:#888; margin-top:8px">Demo Mode: Daily 9AM trigger simulated manually.</p>
+                            <button class="btn btn-primary" style="margin-top:24px" onclick="generateDigest()">Generate Today's 9AM Digest (Simulated)</button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Render Digest UI
+                if (digestJobs.length === 0) {
+                    root.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📭</div>
+                            <h2>No matching roles today</h2>
+                            <p>We couldn't find any jobs matching your criteria today. Check again tomorrow!</p>
+                            <button class="btn btn-outline" style="margin-top:20px" onclick="localStorage.removeItem('${storageKey}'); renderDigest()">Regenerate (Debug)</button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const dateStr = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+                // Recent Status Updates Logic
+                const allStatusIds = Object.keys(window.state.status);
+                const recentUpdates = allStatusIds.map(id => {
+                    const job = JOBS.find(j => j.id === id);
+                    if (!job) return null;
+                    const statusObj = window.state.status[id];
+                    // Handle legacy string status if any
+                    if (typeof statusObj === 'string') return { job, status: statusObj, date: new Date(0) }; // Old updates go to bottom
+                    return { job, status: statusObj.status, date: new Date(statusObj.date) };
+                }).filter(x => x && x.status !== 'Not Applied');
+
+                recentUpdates.sort((a, b) => b.date - a.date);
+                const recentSlice = recentUpdates.slice(0, 5); // Show top 5
+
+                root.innerHTML = `
+                    <div style="max-width: 700px; margin: 0 auto; padding-bottom: 80px;">
+                        
+                        <div class="paper-card">
+                            <!-- Header -->
+                            <div style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 40px; text-align: center;">
+                                <div style="font-family: var(--font-heading); font-size: 32px; font-weight: 700; color: #1e293b; margin-bottom: 8px;">The Daily Brief</div>
+                                <div style="font-family: var(--font-body); font-size: 14px; color: #64748b; letter-spacing: 1px; text-transform: uppercase;">${dateStr}</div>
+                            </div>
+                            
+                            <!-- List -->
+                            <div style="padding: 0;">
+                                ${digestJobs.map((j, i) => `
+                                    <div style="padding: 24px 32px; border-bottom: 1px solid #e2e8f0; display: flex; gap: 20px; align-items: start; transition: background 0.2s; cursor: pointer;" onclick="openModal('${j.id}')" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'">
+                                        <div style="font-family: var(--font-heading); font-size: 24px; color: #cbd5e1; font-weight: 700; width: 30px;">${i + 1}</div>
+                                        <div style="flex: 1;">
+                                            <div style="font-family: var(--font-heading); font-weight: 600; font-size: 18px; color: var(--color-text-primary); margin-bottom: 4px;">${j.title}</div>
+                                            <div style="font-size: 14px; color: var(--color-text-secondary); margin-bottom: 8px;">${j.company} • ${j.location}</div>
+                                            <div style="display: flex; gap: 8px;">
+                                                <span style="background: #f1f5f9; padding: 2px 8px; border-radius: 4px; font-size: 12px; color: #475569;">${j.experience}</span>
+                                                <span style="background: #f1f5f9; padding: 2px 8px; border-radius: 4px; font-size: 12px; color: #475569;">${j.mode}</span>
+                                                ${getMatchBadge(j.matchScore)}
+                                            </div>
+                                        </div>
+                                        <div style="align-self: center;">
+                                            <button class="btn btn-outline" style="min-width: 80px;">View</button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+
+                            <!-- Footer -->
+                            <div style="background: #f8fafc; padding: 32px; text-align: center; border-top: 1px solid #e2e8f0;">
+                                <p style="font-size: 13px; color: #64748b; margin-bottom: 24px; font-style: italic;">"Choose a job you love, and you will never have to work a day in your life."</p>
+                                <div style="display: flex; justify-content: center; gap: 16px;">
+                                    <button class="btn btn-outline" onclick="copyDigest()" style="background: #fff;">
+                                        <span style="margin-right: 6px;">📋</span> Copy Digest
+                                    </button>
+                                    <a href="${getMailtoLink(digestJobs)}" class="btn btn-primary">
+                                        <span style="margin-right: 6px;">✉️</span> Create Email Draft
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Status Updates Section -->
+                        ${recentSlice.length > 0 ? `
+                            <div style="margin-top: 40px;">
+                                <h3 style="font-family: var(--font-heading); font-size: 20px; font-weight: 600; margin-bottom: 20px; color: var(--color-text-primary);">Recent Activity</h3>
+                                <div class="card" style="padding: 0; overflow: hidden;">
+                                    ${recentSlice.map(item => `
+                                        <div style="padding: 16px 24px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; font-size: 14px;">
+                                            <div>
+                                                <span style="font-weight: 600;">${item.job.title}</span> 
+                                                <span style="color: #64748b;">at ${item.job.company}</span>
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 12px;">
+                                                <span class="status-badge status-${item.status.toLowerCase().replace(' ', '-')}">${item.status}</span>
+                                                <span style="color: #cbd5e1; font-size: 12px;">${item.date.toLocaleDateString()}</span>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        <div style="text-align: center; margin-top: 32px;">
+                            <button style="border: none; background: none; color: #94a3b8; font-size: 12px; cursor: pointer; text-decoration: underline;" onclick="regenerateDigest()">Recalculate Digest</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            window.regenerateDigest = () => {
+                const today = new Date().toISOString().split('T')[0];
+                const storageKey = `jobTrackerDigest_${today} `;
+                localStorage.removeItem(storageKey);
+                generateDigest();
+            };
+
+            window.generateDigest = () => {
+                const p = window.state.prefs;
+
+                // 1. Score all jobs
+                const scoredJobs = JOBS.map(j => ({
+                    ...j,
+                    matchScore: calculateMatchScore(j, p)
+                }));
+
+                // 2. Sort by Match Score (desc) then Posted Date (asc) -> (Latest usually means smallest postedDaysAgo)
+                scoredJobs.sort((a, b) => {
+                    if (b.matchScore !== a.matchScore) return b.matchScore - a.matchScore;
+                    return a.postedDaysAgo - b.postedDaysAgo;
+                });
+
+                // 3. Take Top 10 (But only if matchScore > 0 or meets threshold)
+                // We use minMatchScore from prefs to ensure quality
+                const validJobs = scoredJobs.filter(j => j.matchScore >= (p.minMatchScore || 1));
+                const top10 = validJobs.slice(0, 10);
+                const ids = top10.map(j => j.id);
+
+                // 4. Store
+                const today = new Date().toISOString().split('T')[0];
+                localStorage.setItem(`jobTrackerDigest_${today} `, JSON.stringify(ids));
+
+                renderDigest();
+            };
+
+            window.copyDigest = () => {
+                const today = new Date().toISOString().split('T')[0];
+                const ids = JSON.parse(localStorage.getItem(`jobTrackerDigest_${today} `) || '[]');
+                const digestJobs = ids.map(id => JOBS.find(j => j.id === id)).filter(Boolean);
+
+                const text = getDigestText(digestJobs);
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Digest copied to clipboard!');
+                }).catch(err => {
+                    alert('Failed to copy: ' + err);
+                });
+            };
+
+            function getDigestText(jobs) {
+                const dateStr = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                let text = `Top 10 Jobs For You — 9AM Digest\n${dateStr} \n\n`;
+
+                jobs.forEach((j, i) => {
+                    text += `${i + 1}. ${j.title} at ${j.company} \n`;
+                    text += `   ${j.location} • ${j.experience} \n`;
+                    text += `   Apply: ${j.applyUrl} \n\n`;
+                });
+
+                text += `Generated by Job Notification Tracker`;
+                return text;
+            }
+
+            function getMailtoLink(jobs) {
+                const subject = encodeURIComponent("My 9AM Job Digest");
+                const body = encodeURIComponent(getDigestText(jobs));
+                return `mailto:? subject = ${subject}& body=${body} `;
+            }
+
+            function renderPlaceholder(title) {
+                root.innerHTML = `
+                    < div class="empty-state" >
+                        <h2>${title ? title.charAt(0).toUpperCase() + title.slice(1) : 'Page'}</h2>
+                        <p>This section is under construction.</p>
+                    </div >
+                    `;
+            }
+
+            // Logic Helpers
+            window.updateFilter = (key, val) => {
+                window.state.filters[key] = val;
+                // Reset to page 1 on filter change
+                if (window.state.pagination) window.state.pagination.page = 1;
+                renderDashboardGrid();
+            };
+
+            window.changePage = (pageNum) => {
+                if (pageNum < 1) return;
+                // we can add max check but render logic handles disable state
+                window.state.pagination.page = pageNum;
+                renderDashboardGrid();
+
+                // Smooth Scroll to top of grid
+                const shell = document.getElementById('dashboard-shell');
+                if (shell) {
+                    // shell.scrollIntoView({ behavior: 'smooth' }); // Scroll whole page?
+                    // Better: scroll window to top or just above grid
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            };
+
+            window.updateStatus = (id, status) => {
+                window.state.status[id] = {
+                    status: status,
+                    date: new Date().toISOString()
+                };
+                localStorage.setItem('jobTrackerStatus', JSON.stringify(window.state.status));
+                showToast(`Status updated: ${status} `);
+                render();
+            };
+
+            function showToast(msg) {
+                let container = document.getElementById('toast-container');
+                if (!container) {
+                    container = document.createElement('div');
+                    container.id = 'toast-container';
+                    document.body.appendChild(container);
+                }
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.innerHTML = `< span >✅</span > ${msg} `;
+                container.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+
+            // --- TEST LOGIC ---
+            window.updateTestStatus = (key, checked) => {
+                window.state.testStatus[key] = checked;
+                localStorage.setItem('jobTrackerTestStatus', JSON.stringify(window.state.testStatus));
+                render(); // Re-render to update counts/locking visual
+            };
+
+            window.resetTests = () => {
+                const keys = Object.keys(window.state.testStatus);
+                keys.forEach(k => window.state.testStatus[k] = false);
+                localStorage.setItem('jobTrackerTestStatus', JSON.stringify(window.state.testStatus));
+                render();
+            };
+
+            // --- SUBMISSION LOGIC ---
+            window.updateSubmission = (key, value) => {
+                window.state.submission[key] = value;
+                localStorage.setItem('jobTrackerSubmission', JSON.stringify(window.state.submission));
+                // render(); // Removed to prevent focus loss on input
+            };
+
+            window.shipProject = () => {
+                const s = window.state.submission;
+                const t = window.state.testStatus;
+                const allTestsPassed = Object.values(t).every(v => v === true);
+
+                if (!allTestsPassed) {
+                    alert('⚠️ Verification Failed: Please complete all items in the Test Checklist.');
+                    navigate('test');
+                    return;
+                }
+
+                if (!s.lovableLink || !s.githubLink || !s.deployLink) {
+                    alert('⚠️ Missing Links: Please provide all 3 required links.');
+                    return;
+                }
+
+                // URL Validation (Simple)
+                const isValidUrl = (string) => {
+                    try { return Boolean(new URL(string)); } catch (e) { return false; }
+                };
+
+                if (!isValidUrl(s.lovableLink) || !isValidUrl(s.githubLink) || !isValidUrl(s.deployLink)) {
+                    alert('⚠️ Invalid URL: Please ensure all links are valid URLs (http/https).');
+                    return;
+                }
+
+                window.state.submission.shipped = true;
+                if (!window.state.submission.shippedAt) {
+                    window.state.submission.shippedAt = new Date().toISOString();
+                }
+                localStorage.setItem('jobTrackerSubmission', JSON.stringify(window.state.submission));
+
+                // Calm confirmation
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.style.background = '#2e7d32'; // Green
+                toast.innerHTML = `<span>✅</span> Project 1 Shipped Successfully.`;
+                document.getElementById('app-root').appendChild(toast);
+                setTimeout(() => toast.remove(), 4000);
+
+                render();
+            };
+
+            window.copySubmission = () => {
+                const s = window.state.submission;
+                const text = `
+Job Notification Tracker — Final Submission
+
+Lovable Project:
+${s.lovableLink}
+
+GitHub Repository:
+${s.githubLink}
+
+Live Deployment:
+${s.deployLink}
+
+Core Features:
+- Intelligent match scoring
+- Daily digest simulation
+- Status tracking
+- Test checklist enforced
+`.trim();
+
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('📋 Final Submission copied to clipboard.');
+                });
+            };
+
+            // --- ACTIONS ---
+            window.updatePreference = (key, value) => {
+                // ... (logic remains)
+                if (key === 'preferredLocations' || key === 'preferredMode') {
+                    // Array logic
+                } else {
+                    window.state.prefs[key] = value;
+                }
+                localStorage.setItem('jobTrackerPreferences', JSON.stringify(window.state.prefs));
+                render();
+            };
+
+            // New: For text inputs to avoid focus loss
+            window.updatePreferenceInput = (key, value) => {
+                window.state.prefs[key] = value;
+                localStorage.setItem('jobTrackerPreferences', JSON.stringify(window.state.prefs));
+            };
+
+            window.toggleSave = (id) => {
+                if (window.state.saved.includes(id)) {
+                    window.state.saved = window.state.saved.filter(i => i !== id);
+                } else {
+                    window.state.saved.push(id);
+                }
+                localStorage.setItem('savedJobs', JSON.stringify(window.state.saved));
+                render();
+            };
+
+            window.openModal = (id) => {
+                const job = JOBS.find(j => j.id === id);
+                const modalContent = document.getElementById('modal-content');
+                modalContent.innerHTML = `
+                                < div class="modal-header" >
+                        <h2 class="modal-title">${job.title}</h2>
+                        <p style="color:var(--color-text-secondary)">${job.company} • ${job.location}</p>
+                    </div >
+                    <div style="margin-bottom:24px">
+                        <h3 style="font-size:14px; margin-bottom:8px">Description</h3>
+                        <p style="font-size:14px; line-height:1.6; color:#333">${job.description}</p>
+                    </div>
+                    <div style="margin-bottom:24px">
+                        <h3 style="font-size:14px; margin-bottom:8px">Skills & Requirements</h3>
+                        <div>
+                            ${job.skills.map(s => `<span class="tag">${s}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div style="display:flex; justify-content:flex-end; gap:8px">
+                        <button class="btn btn-outline" onclick="closeModal()">Close</button>
+                        <a href="${job.applyUrl}" target="_blank" class="btn btn-primary">Apply Now</a>
+                    </div>
+                `;
+                document.getElementById('modal-root').classList.add('open');
+            };
+
+            window.closeModal = (e) => {
+                if (!e || e.target.id === 'modal-root' || !e.target.closest('#modal-root')) {
+                    document.getElementById('modal-root').classList.remove('open');
+                }
+            };
+
+            // Initial Render
+            // If no prefs, force route to settings? No, let them explore.
+            if (!localStorage.getItem('jobTrackerPreferences')) {
+                // navigate('settings');
+                // User asked for banner, so stay on route
+            }
+            render();
+
+        } catch (e) {
+            document.getElementById('error-container').innerText = 'Error initializing app: ' + e.message;
+            document.getElementById('error-container').style.display = 'block';
+        }
+
+        // --- PREMIUM INTERACTION EFFECTS ---
+
+        // 1. Cursor Spotlight
+        const spotlight = document.createElement('div');
+        spotlight.id = 'cursor-spotlight';
+        document.body.appendChild(spotlight);
+
+        let mouseX = 0, mouseY = 0;
+        let spotlightX = 0, spotlightY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        // Smooth follow loop
+        function animateSpotlight() {
+            // Lerp for smooth lag effect
+            spotlightX += (mouseX - spotlightX) * 0.1;
+            spotlightY += (mouseY - spotlightY) * 0.1;
+
+            spotlight.style.left = `${spotlightX} px`;
+            spotlight.style.top = `${spotlightY} px`;
+
+            requestAnimationFrame(animateSpotlight);
+        }
+        animateSpotlight();
+
+        // 2. Parallax Tilt for Cards (Subtle)
+        document.addEventListener('mousemove', (e) => {
+            const cards = document.querySelectorAll('.job-card');
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                // Only if mouse is near/over
+                if (x > -50 && x < rect.width + 50 && y > -50 && y < rect.height + 50) {
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -2; // Max 2deg tilt
+                    const rotateY = ((x - centerX) / centerX) * 2;
+
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+                } else {
+                    // Reset if far away
+                    if (card.style.transform.includes('rotate')) {
+                        card.style.transform = '';
+                    }
+                }
+            });
+        });
+
+    </script>
+</body>
+
+</html>
